@@ -42,7 +42,7 @@ int main() {
   // Example 1 [-1,1]
   a = -1.0;
   b = 1.0;
-  n = 10000000;
+  n = 1000000000;
   timerStart();
   trap();
   printf("Took %ld ms\n", timerStop());
@@ -51,7 +51,7 @@ int main() {
   // Example 2 [0,10]
   a = 0.0;
   b = 10.0;
-  n = 10000000;
+  n = 1000000000;
   timerStart();
   trap();
   printf("Took %ld ms\n", timerStop());
