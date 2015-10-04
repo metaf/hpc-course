@@ -52,6 +52,7 @@ int main(int argc, char* argv[]) {
     readMatrixFile(World,N,argv[3]);
   } else {
     // Otherwise, generate two random matrix.
+    srand (time(NULL));
     for (int i=0; i<N; i++) {
       for (int j=0; j<N; j++) {
 	World[i][j] = rand() % 2;
