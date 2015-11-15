@@ -85,7 +85,7 @@ main(int argc, char** argv){
 	// acquiring memory for particle arrays
 	number = n / p;
 	if (n % p != 0){
-		printf("Warning: n is not evenly divisible!")
+		printf("Warning: n is not evenly divisible!");
 	}
 	locals = (struct Particle *) malloc(number * sizeof(struct Particle));
 	remotes = (struct Particle *) malloc(number * sizeof(struct Particle));
@@ -152,7 +152,8 @@ main(int argc, char** argv){
 	}
 
 	// YOUR CODE GOES HERE (ring algorithm)
-	for (int i = 0; i < (p-1)/2 ; i++ ){
+	int i;
+	for (i = 0; i < (p-1)/2 ; i++ ){
 		MPI_Sendrecv_replace(
 			remotes,
 			data_count_in_floats,
@@ -313,7 +314,8 @@ int read_file(struct Particle *set, int size, char *file_name){
 	}
 
 	// reading particle values
-	for(int i=0; i<size; i++){
+	int i;
+	for(i=0; i<size; i++){
 		fscanf(ifp, "%f\t%f\t%f", &set[i].x, &set[i].y, &set[i].mass);
 		set[i].fx = 0.0;
 		set[i].fy = 0.0;
