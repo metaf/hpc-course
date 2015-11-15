@@ -166,7 +166,7 @@ main(int argc, char** argv){
 			&status
 		);
 
-		compute_interaction(local,remotes,number);
+		compute_interaction(locals,remotes,number);
 	}
 
 	int stepsToGoToOrig = p - (p-1)/2;
