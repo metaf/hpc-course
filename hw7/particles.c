@@ -54,7 +54,6 @@ main(int argc, char** argv){
 	struct Particle *globals;// Array of all particles in the system
 	struct Particle *locals;// Array of local particles
 	struct Particle *remotes;// Array of foreign particles
-	struct Particle *temp;
 	char *file_name;// File name
 	MPI_Status status;// Return status for receive
 	int j, rounds, initiator, sender;
@@ -90,8 +89,6 @@ main(int argc, char** argv){
 	}
 	locals = (struct Particle *) malloc(number * sizeof(struct Particle));
 	remotes = (struct Particle *) malloc(number * sizeof(struct Particle));
-	temp = (struct Particle *) malloc(number * sizeof(struct Particle));
-
 
 	// checking for file information
 	if(argc == 3){
@@ -153,46 +150,40 @@ main(int argc, char** argv){
 	if(myRank == 0){
 		start_time = MPI_Wtime();
 	}
-	MPI_Request rqs[p];
-	MPI_Request rqr[p]; //Dunno if I actually need these?
 
 	// YOUR CODE GOES HERE (ring algorithm)
 	for (int i = 0; i < (p-1)/2 ; i++ ){
-		MPI_Isend(remotes,
-					data_count_in_floats,
-					MPI_FLOAT,
-					((myRank+1) % p ),
-					tag,
-					MPI_COMM_WORLD,
-					&rqs[myRank]);
-		//Should I use Recv, or Irecv with a wait after?
-		int recvFrom=(myRank-1);
-		if (recvFrom < 0){
-			recvFrom = (p-1);
-		}//0 should recv from p-1
+		MPI_Sendrecv_replace(
+			remotes,
+			data_count_in_floats,
+			MPI_FLOAT,
+			((myRank+1) % p ),
+			tag,
+			((myRank-1) % p),
+			tag,
+			MPI_COMM_WORLD,
+			&status
+		);
 
-		//receive Synchronously, because we have to wait for the data anyway.
-		//BUT recieve only into TEMP because otherwise we could overwrite remtoes
-		//before we ever send them since *that*'s async.
-
-		//THEN, we *wait* for our send to complete, and we can copy temp into remote?
-		MPI_Recv(temp,
-					data_count_in_floats,
-					MPI_FLOAT,
-					recvFrom,
-					tag,
-					MPI_COMM_WORLD);
-					//&rqr[myRank]);
-		//MPI_Wait(&rqr[myRank])
 		compute_interaction(local,remotes,number);
 	}
-	//Now we send our current remotes back to their original proc, while receiving our
-	//originals back.
 
-
-
-
-
+	int stepsToGoToOrig = p - (p-1)/2;
+	int origRankOfTheseRemotes = (myRank + stepsToGoToOrig) % p;
+	int whoHasMyOrig = (myRank - stepsToGoToOrig) % p;
+	MPI_Sendrecv_replace(
+		remotes,
+		data_count_in_floats,
+		MPI_FLOAT,
+		origRankOfTheseRemotes,
+		tag,
+		whoHasMyOrig,
+		tag,
+		MPI_COMM_WORLD,
+		&status
+	);
+	merge(locals,remotes,number);
+	compute_self_interaction(locals,number);
 
 	// stopping timer
 	if(myRank == 0){
@@ -204,6 +195,16 @@ main(int argc, char** argv){
 	if(argc == 3){
 
 		// YOUR CODE GOES HERE (collect particles at rank 0)
+		MPI_Gather(
+			locals,
+			data_count_in_floats,
+			MPI_FLOAT,
+			globals,
+			data_count_in_floats,
+			MPI_FLOAT,
+			0,
+			MPI_COMM_WORLD
+		);
 
 		if(myRank == 0) {
 			print_particles(globals,n);
