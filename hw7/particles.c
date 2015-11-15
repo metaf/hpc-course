@@ -152,7 +152,8 @@ main(int argc, char** argv){
 	}
 
 	// YOUR CODE GOES HERE (ring algorithm)
-	for (int i = 0; i < (p-1)/2 ; i++ ){
+	int i;
+	for (i = 0; i < (p-1)/2 ; i++ ){
 		MPI_Sendrecv_replace(
 			remotes,
 			data_count_in_floats,
