@@ -89,7 +89,7 @@ main(int argc, char** argv){
 	}
 	locals = (struct Particle *) malloc(number * sizeof(struct Particle));
 	remotes = (struct Particle *) malloc(number * sizeof(struct Particle));
-
+	int data_count_in_floats=(number * (sizeof (struct Particle)) / sizeof(float));
 	// checking for file information
 	if(argc == 3){
 		if(myRank == 0){
@@ -119,7 +119,7 @@ main(int argc, char** argv){
 		// might consider asyncronous send/recv.
 
 		// YOUR CODE GOES HERE (distributing particles among processors)
-		int data_count_in_floats=(number * (sizeof (struct Particle)) / sizeof(float));
+
 		MPI_Scatter(globals,
 						data_count_in_floats,
 						MPI_FLOAT,
