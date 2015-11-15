@@ -158,9 +158,9 @@ main(int argc, char** argv){
 			remotes,
 			data_count_in_floats,
 			MPI_FLOAT,
-			((myRank+1) % p ),
+			abs((myRank+1) % p ),
 			tag,
-			((myRank-1) % p),
+			abs((myRank-1) % p),
 			tag,
 			MPI_COMM_WORLD,
 			&status
@@ -170,8 +170,8 @@ main(int argc, char** argv){
 	}
 
 	int stepsToGoToOrig = p - (p-1)/2;
-	int origRankOfTheseRemotes = (myRank + stepsToGoToOrig) % p;
-	int whoHasMyOrig = (myRank - stepsToGoToOrig) % p;
+	int origRankOfTheseRemotes = abs ((myRank + stepsToGoToOrig) % p);
+	int whoHasMyOrig = abs((myRank - stepsToGoToOrig) % p);
 	MPI_Sendrecv_replace(
 		remotes,
 		data_count_in_floats,
