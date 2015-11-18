@@ -84,8 +84,8 @@ main(int argc, char** argv){
 
 	// acquiring memory for particle arrays
 	number = n / p;
-	if (n % p != 0){
-		printf("Warning: n is not evenly divisible!");
+	if (n % p != 0 && myRank == 0){ //only print 1x
+		printf("#Warning: n is not evenly divisible!\n");
 	}
 	locals = (struct Particle *) malloc(number * sizeof(struct Particle));
 	remotes = (struct Particle *) malloc(number * sizeof(struct Particle));
@@ -96,7 +96,9 @@ main(int argc, char** argv){
 			globals = (struct Particle *) malloc(n * sizeof(struct Particle));
 
 			// YOUR CODE GOES HERE (reading particles from file)
+			printf("#About to read %s", argv[2]);
 			read_file(globals,n,argv[2]);
+			printf("#allegedly read file")
 
 		}
 		// To send/recv (or scatter/gather) you will need to learn how to
@@ -119,7 +121,7 @@ main(int argc, char** argv){
 		// might consider asyncronous send/recv.
 
 		// YOUR CODE GOES HERE (distributing particles among processors)
-
+		printf("#%d About to scatter", myRank);
 		MPI_Scatter(globals,
 						data_count_in_floats,
 						MPI_FLOAT,
@@ -129,6 +131,7 @@ main(int argc, char** argv){
 						0,
 						MPI_COMM_WORLD
 					);
+		printf("#%d Done Scattering", myRank);
 
 	} else {
 		// random initialization of local particle array
@@ -154,6 +157,8 @@ main(int argc, char** argv){
 	// YOUR CODE GOES HERE (ring algorithm)
 	int i;
 	for (i = 0; i < (p-1)/2 ; i++ ){
+		printf("#%d Sending To %d",myRank, abs((myRank+1) % p));
+		printf("#%d Recv From %d",myRank, abs((myRank-1) % p));
 		MPI_Sendrecv_replace(
 			remotes,
 			data_count_in_floats,
@@ -165,8 +170,10 @@ main(int argc, char** argv){
 			MPI_COMM_WORLD,
 			&status
 		);
+		printf("#%d SendRecv Complete!");
 
 		compute_interaction(locals,remotes,number);
+		printf("#%d compute_interaction complete!");
 	}
 
 	int stepsToGoToOrig = p - (p-1)/2;
