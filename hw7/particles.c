@@ -131,7 +131,7 @@ main(int argc, char** argv){
 		// might consider asyncronous send/recv.
 
 		// YOUR CODE GOES HERE (distributing particles among processors)
-		printf("#%d About to scatter\n", myRank);
+		//printf("#%d About to scatter\n", myRank);
 		MPI_Scatter(globals,
 						data_count_in_floats,
 						MPI_FLOAT,
@@ -141,7 +141,7 @@ main(int argc, char** argv){
 						0,
 						MPI_COMM_WORLD
 					);
-		printf("#%d Done Scattering\n", myRank);
+		//printf("#%d Done Scattering\n", myRank);
 
 	} else {
 		// random initialization of local particle array
@@ -169,8 +169,8 @@ main(int argc, char** argv){
 	for (i = 0; i < (p-1)/2 ; i++ ){
 		int sendTo = realMod((myRank+1),p);
 		int recvFrom = realMod((myRank-1), p);
-		printf("#%d Sending To %d\n",myRank, sendTo);
-		printf("#%d Recv From %d\n",myRank, recvFrom);
+		//printf("#%d Sending To %d\n",myRank, sendTo);
+	//	printf("#%d Recv From %d\n",myRank, recvFrom);
 
 		MPI_Sendrecv_replace(
 			remotes,
@@ -183,18 +183,18 @@ main(int argc, char** argv){
 			MPI_COMM_WORLD,
 			&status
 		);
-		printf("#%d SendRecv Complete!\n", myRank);
+		//printf("#%d SendRecv Complete!\n", myRank);
 
 		compute_interaction(locals,remotes,number);
-		printf("#%d compute_interaction complete!\n", myRank);
+		//printf("#%d compute_interaction complete!\n", myRank);
 	}
 
 	int stepsToGoToOrig = p - (p-1)/2;
 	int origRankOfTheseRemotes = realMod((myRank + stepsToGoToOrig), p);
 	int whoHasMyOrig = realMod((myRank - stepsToGoToOrig),p);
-	printf("#%d DONE WITH LOOP\n",myRank);
+	/*printf("#%d DONE WITH LOOP\n",myRank);
 	printf("#%d My remotes go back to %d\n",myRank, origRankOfTheseRemotes);
-	printf("#%d Recving remotes from: %d\n", myRank, whoHasMyOrig);
+	printf("#%d Recving remotes from: %d\n", myRank, whoHasMyOrig);*/
 	MPI_Sendrecv_replace(
 		remotes,
 		data_count_in_floats,
@@ -206,7 +206,7 @@ main(int argc, char** argv){
 		MPI_COMM_WORLD,
 		&status
 	);
-	printf("#%d RecvOrig complete\n", myRank);
+	//printf("#%d RecvOrig complete\n", myRank);
 	merge(locals,remotes,number);
 	compute_self_interaction(locals,number);
 
