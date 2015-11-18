@@ -98,7 +98,7 @@ main(int argc, char** argv){
 			// YOUR CODE GOES HERE (reading particles from file)
 			printf("#About to read %s", argv[2]);
 			read_file(globals,n,argv[2]);
-			printf("#allegedly read file")
+			printf("#allegedly read file");
 
 		}
 		// To send/recv (or scatter/gather) you will need to learn how to
@@ -170,15 +170,18 @@ main(int argc, char** argv){
 			MPI_COMM_WORLD,
 			&status
 		);
-		printf("#%d SendRecv Complete!");
+		printf("#%d SendRecv Complete!", myRank);
 
 		compute_interaction(locals,remotes,number);
-		printf("#%d compute_interaction complete!");
+		printf("#%d compute_interaction complete!", myRank);
 	}
 
 	int stepsToGoToOrig = p - (p-1)/2;
 	int origRankOfTheseRemotes = abs ((myRank + stepsToGoToOrig) % p);
 	int whoHasMyOrig = abs((myRank - stepsToGoToOrig) % p);
+	printf("#%d DONE WITH LOOP",myRank);
+	printf("#%d My remotes go back to %d",myRank, origRankOfTheseRemotes);
+	printf("#%d Recving remotes from: %d", myRank, whoHasMyOrig);
 	MPI_Sendrecv_replace(
 		remotes,
 		data_count_in_floats,
@@ -190,6 +193,7 @@ main(int argc, char** argv){
 		MPI_COMM_WORLD,
 		&status
 	);
+	printf("#%d RecvOrig complete", myRank);
 	merge(locals,remotes,number);
 	compute_self_interaction(locals,number);
 
