@@ -42,6 +42,16 @@ void compute_interaction(struct Particle *source, struct Particle *destination, 
 void compute_self_interaction(struct Particle *set, int size);
 void merge(struct Particle *first, struct Particle *second, int limit);
 
+
+//Because C is stupid
+int realMod (int a, int b) //reference http://stackoverflow.com/a/4003287/910303
+{
+   int ret = a % b;
+   if(ret < 0)
+     ret+=b;
+   return ret;
+}
+
 // Main function
 main(int argc, char** argv){
 	int myRank;// Rank of process
@@ -163,9 +173,9 @@ main(int argc, char** argv){
 			remotes,
 			data_count_in_floats,
 			MPI_FLOAT,
-			abs((myRank+1) % p ),
+			realMod((myRank+1),p),
 			tag,
-			abs((myRank-1) % p),
+			realMod((myRank-1), p),
 			tag,
 			MPI_COMM_WORLD,
 			&status
@@ -177,8 +187,8 @@ main(int argc, char** argv){
 	}
 
 	int stepsToGoToOrig = p - (p-1)/2;
-	int origRankOfTheseRemotes = abs ((myRank + stepsToGoToOrig) % p);
-	int whoHasMyOrig = abs((myRank - stepsToGoToOrig) % p);
+	int origRankOfTheseRemotes = realMod((myRank + stepsToGoToOrig), p);
+	int whoHasMyOrig = realMod((myRank - stepsToGoToOrig),p);
 	printf("#%d DONE WITH LOOP\n",myRank);
 	printf("#%d My remotes go back to %d\n",myRank, origRankOfTheseRemotes);
 	printf("#%d Recving remotes from: %d\n", myRank, whoHasMyOrig);
