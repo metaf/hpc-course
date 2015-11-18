@@ -96,9 +96,9 @@ main(int argc, char** argv){
 			globals = (struct Particle *) malloc(n * sizeof(struct Particle));
 
 			// YOUR CODE GOES HERE (reading particles from file)
-			printf("#About to read %s", argv[2]);
+			printf("#About to read %s\n", argv[2]);
 			read_file(globals,n,argv[2]);
-			printf("#allegedly read file");
+			printf("#allegedly read file\n");
 
 		}
 		// To send/recv (or scatter/gather) you will need to learn how to
@@ -121,7 +121,7 @@ main(int argc, char** argv){
 		// might consider asyncronous send/recv.
 
 		// YOUR CODE GOES HERE (distributing particles among processors)
-		printf("#%d About to scatter", myRank);
+		printf("#%d About to scatter\n", myRank);
 		MPI_Scatter(globals,
 						data_count_in_floats,
 						MPI_FLOAT,
@@ -131,7 +131,7 @@ main(int argc, char** argv){
 						0,
 						MPI_COMM_WORLD
 					);
-		printf("#%d Done Scattering", myRank);
+		printf("#%d Done Scattering\n", myRank);
 
 	} else {
 		// random initialization of local particle array
@@ -157,8 +157,8 @@ main(int argc, char** argv){
 	// YOUR CODE GOES HERE (ring algorithm)
 	int i;
 	for (i = 0; i < (p-1)/2 ; i++ ){
-		printf("#%d Sending To %d",myRank, abs((myRank+1) % p));
-		printf("#%d Recv From %d",myRank, abs((myRank-1) % p));
+		printf("#%d Sending To %d\n",myRank, abs((myRank+1) % p));
+		printf("#%d Recv From %d\n",myRank, abs((myRank-1) % p));
 		MPI_Sendrecv_replace(
 			remotes,
 			data_count_in_floats,
@@ -170,18 +170,18 @@ main(int argc, char** argv){
 			MPI_COMM_WORLD,
 			&status
 		);
-		printf("#%d SendRecv Complete!", myRank);
+		printf("#%d SendRecv Complete!\n", myRank);
 
 		compute_interaction(locals,remotes,number);
-		printf("#%d compute_interaction complete!", myRank);
+		printf("#%d compute_interaction complete!\n", myRank);
 	}
 
 	int stepsToGoToOrig = p - (p-1)/2;
 	int origRankOfTheseRemotes = abs ((myRank + stepsToGoToOrig) % p);
 	int whoHasMyOrig = abs((myRank - stepsToGoToOrig) % p);
-	printf("#%d DONE WITH LOOP",myRank);
-	printf("#%d My remotes go back to %d",myRank, origRankOfTheseRemotes);
-	printf("#%d Recving remotes from: %d", myRank, whoHasMyOrig);
+	printf("#%d DONE WITH LOOP\n",myRank);
+	printf("#%d My remotes go back to %d\n",myRank, origRankOfTheseRemotes);
+	printf("#%d Recving remotes from: %d\n", myRank, whoHasMyOrig);
 	MPI_Sendrecv_replace(
 		remotes,
 		data_count_in_floats,
@@ -193,7 +193,7 @@ main(int argc, char** argv){
 		MPI_COMM_WORLD,
 		&status
 	);
-	printf("#%d RecvOrig complete", myRank);
+	printf("#%d RecvOrig complete\n", myRank);
 	merge(locals,remotes,number);
 	compute_self_interaction(locals,number);
 
