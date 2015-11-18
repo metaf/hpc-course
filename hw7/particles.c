@@ -169,8 +169,8 @@ main(int argc, char** argv){
 	for (i = 0; i < (p-1)/2 ; i++ ){
 		int sendTo = realMod((myRank+1),p);
 		int recvFrom = realMod((myRank-1), p);
-		printf("#%d Sending To %d\n",myRank, abs((myRank+1) % p));
-		printf("#%d Recv From %d\n",myRank, abs((myRank-1) % p));
+		printf("#%d Sending To %d\n",myRank, sendTo);
+		printf("#%d Recv From %d\n",myRank, recvFrom);
 
 		MPI_Sendrecv_replace(
 			remotes,
