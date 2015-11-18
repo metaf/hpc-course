@@ -167,15 +167,18 @@ main(int argc, char** argv){
 	// YOUR CODE GOES HERE (ring algorithm)
 	int i;
 	for (i = 0; i < (p-1)/2 ; i++ ){
+		int sendTo = realMod((myRank+1),p);
+		int recvFrom = realMod((myRank-1), p);
 		printf("#%d Sending To %d\n",myRank, abs((myRank+1) % p));
 		printf("#%d Recv From %d\n",myRank, abs((myRank-1) % p));
+
 		MPI_Sendrecv_replace(
 			remotes,
 			data_count_in_floats,
 			MPI_FLOAT,
-			realMod((myRank+1),p),
+			sendTo,
 			tag,
-			realMod((myRank-1), p),
+			recvFrom,
 			tag,
 			MPI_COMM_WORLD,
 			&status
