@@ -24,10 +24,10 @@ __global__ void scan_simple(float *g_odata, float *g_idata, int n) {
 	float* s_out = (float*) &s_in[n];
 	float* temp; //for swapping
 
-	s_out[tid]=g_idata[tid] //TODO: do we need to shift here?
+	s_out[tid]=g_idata[tid]; //TODO: do we need to shift here?
 	//NOTE: here, we read into OUT not IN, because in our loop we have to swap them.
 
-	__syncthreads()
+	__syncthreads();
 	for (int offset = 1; offset < n; offset *=2){
 		temp = s_in;
 		s_in = s_out;
@@ -38,7 +38,7 @@ __global__ void scan_simple(float *g_odata, float *g_idata, int n) {
 		else{
 			s_out[tid] = s_in[tid];
 		}
-		__syncthreads()
+		__syncthreads();
 	}
 	//NOTE: we swap buffer pointers at the beginning of the loop. so at the end of the
 	// 			last iteration we'll have the final values in s_out
