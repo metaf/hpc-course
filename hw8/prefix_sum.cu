@@ -142,7 +142,7 @@ int main(void) {
 	cudaMemcpy(out, d_out, size, cudaMemcpyDeviceToHost);
 	printf("TIME: Copy back %d ms\n",  timerStop());
 
-	if (printError(gold_out, out, false)) {
+	if (printError(gold_out, out, true)) {
 		printf("ERROR: The simple scan function failed to produce proper output.\n");
 	} else {
 		printf("CONGRATS: The simple scan function produced proper output.\n");
