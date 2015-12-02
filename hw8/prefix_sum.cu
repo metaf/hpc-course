@@ -57,9 +57,24 @@ __global__ void scan_simple(float *g_odata, float *g_idata, int n) {
  * You should implement the prescan kernel function here!
  */
 __global__ void prescan(float *g_odata, float *g_idata, int n) {
-	extern  __shared__  float temp[];
+	int tid = threadIdx.x;
+	extern  __shared__  float sharedmem[];
+	float* s_in = (float *) sharedmem;
+	float* s_out = (float*) &s_in[n];
 
-	// STUDENT: YOUR CODE GOES HERE.
+	s_in[tid] = g_idata[tid];
+	s_in[256 + tid] = g_idata[256 + tid];
+	//this ought to load all data into s_in
+	__syncthreads();
+
+	/*for(int d = n>>1; d > 0; d >>=1){ //256, 128, 64...
+		__syncthreads();
+
+	}*/
+	for (int offset = 1; offset< n>>1; offset*=2){ //1,2,4,....
+		//for every 2^offset threads
+		//if tid is 
+	}
 
 }
 
