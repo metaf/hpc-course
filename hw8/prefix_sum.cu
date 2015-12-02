@@ -18,10 +18,10 @@
  * You should implement the simple scan function here!
  */
 __global__ void scan_simple(float *g_odata, float *g_idata, int n) {
-	int tid=threadIdx.x
-	extern  __shared__  float temp[]; //this is 2N floats
-	float* s_in = float* temp;
-	float* s_out = float* s_in[n];
+	int tid=threadIdx.x;
+	extern  __shared__  float sharedmem[]; //this is 2N floats
+	float* s_in = (float *) sharedmem;
+	float* s_out = (float*) &s_in[n];
 	float* temp; //for swapping
 
 	s_out[tid]=g_idata[tid] //TODO: do we need to shift here?
