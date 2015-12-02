@@ -28,7 +28,7 @@ __global__ void scan_simple(float *g_odata, float *g_idata, int n) {
 		s_out[tid] = 0;
 	}
 	else {
-		s_out[tid] = g_idata[tid + 1];
+		s_out[tid] = g_idata[tid - 1];
 	}
 	//NOTE: here, we read into OUT not IN, because in our loop we have to swap them.
 
