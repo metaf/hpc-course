@@ -24,7 +24,12 @@ __global__ void scan_simple(float *g_odata, float *g_idata, int n) {
 	float* s_out = (float*) &s_in[n];
 	float* temp; //for swapping
 
-	s_out[tid]=g_idata[tid]; //TODO: do we need to shift here?
+	if ( tid == 0){
+		s_out[tid] = 0;
+	}
+	else {
+		s_out[tid] = g_idata[tid + 1];
+	}
 	//NOTE: here, we read into OUT not IN, because in our loop we have to swap them.
 
 	__syncthreads();
