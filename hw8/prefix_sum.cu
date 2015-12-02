@@ -12,7 +12,7 @@
 #include <math.h>
 #include <string.h>
 
-#define N 512
+#define N 1024
 
 /*
  * You should implement the simple scan function here!
