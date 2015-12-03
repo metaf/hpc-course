@@ -67,7 +67,8 @@ __global__ void prescan(float *g_odata, float *g_idata, int n) {
 
 	__syncthreads();
 
-	for (int d =0; (1<<d) < n ; d++){ //0,1,2....
+	int d;
+	for (d=0; (1<<d) < n ; d++){ //0,1,2....
 		//now if you're the (1<<d)th thread, add with offset (1<<d)-1
 		int stride = (1 << (d+1));
 		int offset = stride -1;
