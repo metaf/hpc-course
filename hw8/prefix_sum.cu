@@ -98,7 +98,7 @@ __global__ void prescan(float *g_odata, float *g_idata, int n) {
 	}
 
 	g_odata[tid] = s_in[tid];
-	g_odata[256+tid] = s_in[256+tid]
+	g_odata[256+tid] = s_in[256+tid];
 
 
 
