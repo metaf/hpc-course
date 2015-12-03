@@ -64,17 +64,19 @@ __global__ void prescan(float *g_odata, float *g_idata, int n) {
 
 	s_in[tid] = g_idata[tid];
 	s_in[256 + tid] = g_idata[256 + tid];
-	//this ought to load all data into s_in
-	__syncthreads();
 
-	/*for(int d = n>>1; d > 0; d >>=1){ //256, 128, 64...
-		__syncthreads();
-
-	}*/
-	for (int offset = 1; offset< n>>1; offset*=2){ //1,2,4,....
-		//for every 2^offset threads
-		//if tid is 
+	for (int d =0; (1<<d) < n ; d++){ //0,1,2....
+		//now if you're the (1<<d)th thread, add with offset (1<<d)-1
+		int stride = (1 << (d+1));
+		int offset = stride -1;
+		if ((tid +1) % stride){
+			//we're in a thread that should do something...
+			//So lets set s_in[tid] = s_in[tid] + s_in[tid - stride -1]
+			s_in[tid] = s_in[tid] + s_in[tid - offset]
+		}
 	}
+
+
 
 }
 
@@ -173,6 +175,9 @@ int main(void) {
 	// note size change in number of threads, only need 256 because each
 	// thread should handle 2 elements.
 	// ***********
+	memset(out, 0, size);
+	cudaMemcpy(d_out, out, size, cudaMemcpyHostToDevice); //zero the d_out
+
 	timerStart();
 	prescan<<< 1, 256, N * 2 * sizeof(float)>>>(d_out, d_in, N);
 	cudaDeviceSynchronize();
