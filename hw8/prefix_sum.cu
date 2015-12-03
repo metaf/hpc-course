@@ -65,16 +65,39 @@ __global__ void prescan(float *g_odata, float *g_idata, int n) {
 	s_in[tid] = g_idata[tid];
 	s_in[256 + tid] = g_idata[256 + tid];
 
+	__syncthreads();
+
 	for (int d =0; (1<<d) < n ; d++){ //0,1,2....
 		//now if you're the (1<<d)th thread, add with offset (1<<d)-1
 		int stride = (1 << (d+1));
 		int offset = stride -1;
-		if ((tid +1) % stride){
+		if (((tid +1) % stride) == 0 ){
 			//we're in a thread that should do something...
 			//So lets set s_in[tid] = s_in[tid] + s_in[tid - stride -1]
-			s_in[tid] = s_in[tid] + s_in[tid - offset]
+			s_in[tid] = s_in[tid] + s_in[tid - offset];
 		}
+		__syncthreads();
 	}
+
+	if (tid == 0){
+		s_in[n-1]=0;
+	}
+	__syncthreads();
+
+	for (; d > 0; d--){ //d is set from above.  Saves us having to do log2(n) - 1
+		int stride = (1 << (d+1));
+		int offset = (stride >> 1)
+		if (((tid +1) % stride) == 0 ){
+			//we're in a thread that should do something...
+			float t = s_in[tid-offset];
+			s_in[tid-offset]=s_in[tid]; //pass my value to my left child
+			s_in[tid] = t + s_in[tid-offset]; //sum left child's old value with my current val
+		}
+		__syncthreads();
+	}
+
+	g_odata[tid] = s_in[tid];
+	g_odata[256+tid] = s_in[256+tid]
 
 
 
