@@ -87,7 +87,7 @@ __global__ void prescan(float *g_odata, float *g_idata, int n) {
 
 	for (; d > 0; d--){ //d is set from above.  Saves us having to do log2(n) - 1
 		int stride = (1 << (d+1));
-		int offset = (stride >> 1)
+		int offset = (stride >> 1);
 		if (((tid +1) % stride) == 0 ){
 			//we're in a thread that should do something...
 			float t = s_in[tid-offset];
